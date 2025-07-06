@@ -50,6 +50,44 @@ finalPrice = originalPrice * (1 - discountPercent / 100)
 
 ### ✅ PUT /api/v1/orders/{id}
 Update an order's status (e.g., to COMPLETED)
+---
+
+## 📊 Sample Data Models
+
+### 🧾 Order
+```json
+{
+  "id": 1,
+  "customerId": 2,
+  "menuItems": [
+    {
+      "menuItem": {
+        "id": 1,
+        "name": "Espresso",
+        "description": "Strong coffee shot",
+        "price": 2.50
+      },
+      "quantity": 2
+    }
+  ],
+  "totalPrice": 4.50,
+  "status": "PENDING",
+  "isPaid": false
+}
+🍽️ MenuItem
+{
+  "id": 1,
+  "name": "Espresso",
+  "description": "Strong coffee shot",
+  "price": 2.50
+}
+🧍 Customer
+{
+  "id": 2,
+  "userId": 7,
+  "name": "Jane Doe",
+  "discountPercent": 10.0
+}
 
 ## 📄 License
 
