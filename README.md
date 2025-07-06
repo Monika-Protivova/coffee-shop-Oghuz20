@@ -74,20 +74,45 @@ Update an order's status (e.g., to COMPLETED)
   "status": "PENDING",
   "isPaid": false
 }
-🍽️ MenuItem
+```
+### 🍽️ MenuItem
+```json
 {
   "id": 1,
   "name": "Espresso",
   "description": "Strong coffee shot",
   "price": 2.50
 }
-🧍 Customer
+```
+### 🧍 Customer
+```json
 {
   "id": 2,
   "userId": 7,
   "name": "Jane Doe",
   "discountPercent": 10.0
 }
+```
+---
+
+## 🛠️ Tech Stack
+
+- 🧠 **Language:** Kotlin  
+- ⚙️ **Framework:** Spring Boot  
+- 🧪 **Testing:** JUnit  
+- 🔐 **Security:** JWT-based Authentication  
+- 📦 **Build Tool:** Gradle (Kotlin DSL)
+
+---
+
+## 🚀 How to Run
+
+1. Clone the repository
+2. Run the application using:
+```
+./gradlew bootRun
+```
+3. Use Postman or similar tools to test endpoints with your JWT token.
 
 ## 📄 License
 
