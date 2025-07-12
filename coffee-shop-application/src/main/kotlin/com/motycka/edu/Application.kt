@@ -8,6 +8,7 @@ import com.motycka.edu.customer.InternalCustomerService
 import com.motycka.edu.menu.MenuRepositoryImpl
 import com.motycka.edu.menu.MenuService
 import com.motycka.edu.menu.menuRoutes
+import com.motycka.edu.order.*
 import com.motycka.edu.security.AuthenticationService
 import com.motycka.edu.security.JwtService
 import com.motycka.edu.security.loginRoutes
@@ -27,30 +28,43 @@ private val logger = KotlinLogging.logger {}
 const val API_PATH = "/api"
 
 fun main() {
-    // Create a simple embedded server with configuration from application.yaml
+    // Load config
     val applicationConfig = io.ktor.server.config.ApplicationConfig("application.yaml")
     val ktorConfig = applicationConfig.config("ktor.deployment")
     val port = ktorConfig.property("port").getString().toInt()
     val host = ktorConfig.propertyOrNull("host")?.getString() ?: "0.0.0.0"
 
     embeddedServer(Netty, port = port, host = host) {
-        // Get the environment configuration
-
         logger.info { "Starting application with configuration" }
 
-        // Configure the database
+        // Set up database tables and test data
         configureDatabases()
 
+        // Repositories
         val menuRepository = MenuRepositoryImpl()
-        val menuService = MenuService(menuRepository = menuRepository)
-        val jwtGenerator = JwtService(config = applicationConfig)
+        val orderRepository = OrderRepositoryImpl()
+        val orderItemRepository = OrderItemRepositoryImpl()
+        val customerRepository = CustomerRepositoryImpl()
         val userRepository = UserRepositoryImpl()
+
+        // Services
+        val menuService = MenuService(menuRepository)
+        val internalMenuService = InternalMenuService(menuRepository)
+        val customerService = InternalCustomerService(customerRepository)
+        val jwtGenerator = JwtService(config = applicationConfig)
+        val orderService = OrderService(
+            orderRepository = orderRepository,
+            orderItemRepository = orderItemRepository,
+            menuService = internalMenuService,
+            customerService = customerService
+        )
         val authenticationService = AuthenticationService(
             userRepository = userRepository,
-            internalCustomerService = InternalCustomerService(customerRepository = CustomerRepositoryImpl()),
+            internalCustomerService = customerService,
             jwtService = jwtGenerator
         )
 
+        // Install features
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -62,13 +76,15 @@ fun main() {
             configureJWT(applicationConfig)
         }
 
+        // Routes
         routing {
             loginRoutes(authenticationService, API_PATH)
 
             authenticate(AUTH_JWT) {
                 menuRoutes(menuService, API_PATH)
-                // add order routes
+                orderRoutes(orderService, API_PATH)
             }
         }
+
     }.start(wait = true)
 }
