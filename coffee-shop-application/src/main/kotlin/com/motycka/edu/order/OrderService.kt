@@ -93,7 +93,8 @@ class OrderService(
             id = order.id!!,
             menuItems = itemResponses,
             totalPrice = totalPrice,
-            status = order.status
+            status = order.status,
+            isPaid = false // placeholder logic
         )
     }
 }
